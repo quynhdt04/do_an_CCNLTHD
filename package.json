@@ -8,16 +8,24 @@
     "start": "next start"
   },
   "dependencies": {
+    "argon2": "^0.44.0",
+    "axios": "^1.12.2",
+    "cloudinary": "^2.7.0",
+    "lucide-react": "^0.544.0",
+    "mongoose": "^8.18.2",
+    "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.3"
+    "sonner": "^2.0.7",
+    "sweetalert2": "^11.23.0",
+    "swiper": "^12.0.2"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
