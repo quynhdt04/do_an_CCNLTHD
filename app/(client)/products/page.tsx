@@ -5,10 +5,10 @@ import ProductItem from "@/app/components/ProductItem";
 
 interface Product {
   id: string;
-  name: string;
+  title: string;
   price: number;
   images: string[];
-  discount?: number;
+  discountPercentage?: number;
   category?: string;
 }
 
@@ -44,7 +44,7 @@ export default function ProductPage() {
 
           const formatted = data.products.map((item: any) => ({
             id: item.id.toString(),
-            name: item.title,
+            title: item.title,
             price: item.price * 25000, // 💰 chuyển sang VNĐ
             images: item.images && item.images.length > 0 ? item.images : [item.thumbnail],
             discount: item.discountPercentage,
@@ -66,7 +66,7 @@ export default function ProductPage() {
   // Lọc sản phẩm theo category & search
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
