@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "swiperjs.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.dummyjson.com",
+      },
     ],
   },
   /* config options here */
