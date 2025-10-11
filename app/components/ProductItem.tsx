@@ -40,12 +40,12 @@ export default function ProductItem({
     };
 
     return (
+            <Link href={`/products/${product.id}`}>
         <div
             className="mx-auto relative space-y-2 group w-full max-w-xs"
             onMouseEnter={() => hasMultipleImages && setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            <Link href="/products/123">
                 <div className="relative w-full aspect-[262/382] mb-1">
                     {hasMultipleImages ? (
                         hovered ? (
@@ -90,7 +90,6 @@ export default function ProductItem({
                 <div className="text-sm text-gray-800 font-semibold truncate w-[200px]">
                     {product.title}
                 </div>
-            </Link>
 
             <div className="flex items-center">
                 {(product?.discountPercentage ?? 0) > 0 && (
@@ -137,5 +136,6 @@ export default function ProductItem({
                 </div>
             </div>
         </div>
+    </Link>
     );
 }
