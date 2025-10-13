@@ -2,6 +2,11 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+b1: clone về máy
+b2: mở terminal nhập lệnh "npm install"
+b3: nhập lệnh "npm install" run localhost
+# Test Git of Cuongdev
+
 First, run the development server:
 
 ```bash
