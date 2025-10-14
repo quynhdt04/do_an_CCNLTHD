@@ -2,25 +2,18 @@ import Image from "next/image"
 import Link from "next/link"
 import { Star } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { ProductData } from "../hooks/useProductData"
 import { saveProductView } from "@/lib/recentlyViewed"
+import type { RecentlyViewedProduct } from "@/lib/recentlyViewed"
 
-interface RelatedProductCardProps {
-  product: ProductData
+interface RecentlyViewedCardProps {
+  product: RecentlyViewedProduct
 }
 
-export function RelatedProductCard({ product }: RelatedProductCardProps) {
+export function RecentlyViewedCard({ product }: RecentlyViewedCardProps) {
   const discountedPrice = product.price * (1 - product.discountPercentage / 100)
 
   const handleClick = () => {
-    saveProductView({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      discountPercentage: product.discountPercentage,
-      thumbnail: product.thumbnail,
-      rating: product.rating,
-    })
+    saveProductView(product)
   }
 
   return (
