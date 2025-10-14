@@ -3,11 +3,11 @@
 import CategorySub from "@/app/components/CategorySub";
 import { useParams } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/navigation";
-import "swiper/css/thumbs";
-import "../../../../styles/swiper-custom.css";
+// import "swiper/css";
+// import "swiper/css/free-mode";
+// import "swiper/css/navigation";
+// import "swiper/css/thumbs";
+// import "../../../../styles/swiper-custom.css";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { useEffect, useState } from "react";
 import type { Swiper as SwiperType } from "swiper";

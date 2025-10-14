@@ -9,10 +9,10 @@ import { useState } from "react";
 
 interface Product {
     id: string;
-    name: string;
+    title: string;
     price: number;
     images: string[];
-    discount?: number;
+    discountPercentage?: number;
 }
 
 interface ProductItemProps {
@@ -72,7 +72,7 @@ export default function ProductItem({
                                         ? product.images[selectedIndexes[product.id]]
                                         : product.images[product.images.length - 1]
                                 }
-                                alt={product.name}
+                                alt={product.title}
                                 fill
                                 className="object-cover transition-opacity duration-500"
                             />
@@ -80,7 +80,7 @@ export default function ProductItem({
                     ) : (
                         <Image
                             src={product.images[0]}
-                            alt={product.name}
+                            alt={product.title}
                             fill
                             className="object-cover"
                         />
@@ -88,18 +88,19 @@ export default function ProductItem({
                     <Heart className="cursor-pointer absolute top-5 right-5 z-10" />
                 </div>
                 <div className="text-sm text-gray-800 font-semibold truncate w-[200px]">
-                    {product.name}
+                    {product.title}
                 </div>
             </Link>
 
             <div className="flex items-center">
-                {product.discount && (
+                {(product?.discountPercentage ?? 0) > 0 && (
                     <div className="text-base text-gray-500 font-semibold mr-2 line-through">
-                        {product.price.toLocaleString("vi-VN")} vnd
+                        {product.price.toLocaleString("vi-VN")} VND
                     </div>
                 )}
                 <div className="text-xs font-semibold">
-                    {product.price.toLocaleString("vi-VN")} vnd
+                    {(product.price * (1 - (product?.discountPercentage ?? 0) / 100))
+                        .toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} VND
                 </div>
             </div>
 
@@ -120,9 +121,9 @@ export default function ProductItem({
                         ))}
                     </ul>
                 )}
-                {product.discount && (
+                {product.discountPercentage && (
                     <div className="px-5 py-1 text-xs font-semibold bg-[#DD0D0D] text-white">
-                        {product.discount}%
+                        {product.discountPercentage}%
                     </div>
                 )}
             </div>

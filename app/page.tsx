@@ -12,29 +12,73 @@ import { useEffect, useState } from "react";
 import ProductItem from "./components/ProductItem";
 import Header from "./components/Header";
 
-interface Product {
-  id: string;
+type Review = {
+  rating: number;
+  comment: string;
+  date: string;
+  reviewerName: string;
+  reviewerEmail: string;
+};
+
+type CategoryWithThumbnail = {
   name: string;
-  price: number;
-  images: string[];
-  discount?: number;
-}
+  thumbnail: string;
+};
 
 export default function Home() {
   const [swipers, setSwipers] = useState<{ [key: string]: any }>({});
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryWithThumbnail[]>([]);
+
   const [selectedIndexes, setSelectedIndexes] = useState<{ [key: string]: number }>({});
 
+  const categories = [
+    "mens-shirts",
+    "womens-shoes",
+    "mens-shoes",
+    "womens-dresses",
+    "tops",
+    "womens-bags",
+    "womens-jewellery",
+  ];
+
   useEffect(() => {
-    const fakeProducts: Product[] = [
-      { id: "product_1", name: "Quần bò", price: 1599000, images: ["/do.jpg", "/vest.png", "/quan.jpg"] },
-      { id: "product_2", name: "Áo khoác", price: 1899000, images: ["/vest.png", "/do.jpg", "/quan.jpg"] },
-      { id: "product_3", name: "Váy hoa", price: 990000, images: ["/quan.jpg", "/vest.png"], discount: 50 },
-      { id: "product_4", name: "Váy hoa", price: 990000, images: ["/quan.jpg"], discount: 80 },
-      { id: "product_5", name: "Váy hoa", price: 990000, images: ["/quan.jpg"], discount: 80 },
-    ];
-    setProducts(fakeProducts);
+    async function fetchData() {
+      try {
+        const promises = categories.map(async (cat) => {
+          const res = await fetch(`https://dummyjson.com/products/category/${cat}`);
+          const data = await res.json();
+
+          return {
+            name: cat,
+            thumbnail: data.products[0]?.thumbnail || "",
+            products: data.products,
+          };
+        });
+
+        const results = await Promise.all(promises);
+
+        setCategoryData(results.map(({ name, thumbnail }) => ({ name, thumbnail })));
+        setProducts(results.flatMap((r) => r.products));
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    }
+    fetchData();
   }, []);
+
+
+  const newProducts = products.sort((a, b) => new Date(b.meta.createdAt).getTime() - new Date(a.meta.createdAt).getTime()).slice(0, 8);
+  const featuredProducts = products.filter((item) => {
+    if (!item.reviews || item.reviews.length === 0) return false;
+
+    const avg =
+      item.reviews.reduce((total: number, review: Review) => total + review.rating, 0) /
+      item.reviews.length;
+
+    return avg > 4.5;
+  });
+
 
   return (
     <>
@@ -100,82 +144,27 @@ export default function Home() {
           }}
           className="mySwiper"
         >
-          <SwiperSlide>
-            <div className="relative">
-              <Image
-                src="/vay-lien.jpg"
-                alt="bg-1"
-                width={600}
-                height={180}
-                className="w-full h-auto object-cover"
-              />
-              <div className="absolute left-[10%] bottom-[10%] flex flex-col space-y-1">
-                <Link href="/" className="text-lg text-white font-semibold uppercase">
-                  VÁY LIỀN
-                </Link>
-                <Link href="/" className="text-base text-white underline">
-                  Khám phá thêm
-                </Link>
+          {categoryData && categoryData.map((item, index) => (
+            <SwiperSlide key={index}>
+              <div className="relative">
+                <Image
+                  src={item.thumbnail}
+                  alt="bg-1"
+                  width={600}
+                  height={180}
+                  className="w-full h-auto object-cover"
+                />
+                <div className="absolute left-[10%] bottom-[10%] flex flex-col space-y-1">
+                  <Link href="/" className="text-lg font-semibold uppercase">
+                    {item.name}
+                  </Link>
+                  <Link href="/" className="text-base underline">
+                    Khám phá thêm
+                  </Link>
+                </div>
               </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="relative">
-              <Image
-                src="/ao.jpg"
-                alt="bg-2"
-                width={600}
-                height={180}
-                className="w-full h-auto object-cover"
-              />
-              <div className="absolute left-[10%] bottom-[10%] flex flex-col space-y-1">
-                <Link href="/" className="text-lg text-white font-semibold uppercase">
-                  ÁO
-                </Link>
-                <Link href="/" className="text-base text-white underline">
-                  Khám phá thêm
-                </Link>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="relative">
-              <Image
-                src="/bz.jpg"
-                alt="bg-2"
-                width={600}
-                height={180}
-                className="w-full h-auto object-cover"
-              />
-              <div className="absolute left-[10%] bottom-[10%] flex flex-col space-y-1">
-                <Link href="/" className="text-lg text-white font-semibold uppercase">
-                  BLAZER
-                </Link>
-                <Link href="/" className="text-base text-white underline">
-                  Khám phá thêm
-                </Link>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="relative">
-              <Image
-                src="/chan-vay.jpg"
-                alt="bg-2"
-                width={600}
-                height={180}
-                className="w-full h-auto object-cover"
-              />
-              <div className="absolute left-[10%] bottom-[10%] flex flex-col space-y-1">
-                <Link href="/" className="text-lg text-white font-semibold uppercase">
-                  CHÂN VÁY
-                </Link>
-                <Link href="/" className="text-base text-white underline">
-                  Khám phá thêm
-                </Link>
-              </div>
-            </div>
-          </SwiperSlide>
+            </SwiperSlide>
+          ))}
         </Swiper>
       </div>
       <div className="xl:px-40 md:px-5 md:py-5 px-5 py-10">
@@ -183,7 +172,7 @@ export default function Home() {
           SẢN PHẨM NỔI BẬT
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2  lg:grid-cols-4 gap-4 py-5">
-          {products.map((product) => (
+          {featuredProducts.map((product) => (
             <ProductItem
               key={product.id}
               product={product}
@@ -223,7 +212,7 @@ export default function Home() {
           className="mySwiper mt-5"
         >
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2  lg:grid-cols-4 gap-4 py-5">
-            {products.map((product) => (
+            {newProducts.map((product) => (
               <SwiperSlide key={product.id}>
                 <ProductItem
                   product={product}
