@@ -129,10 +129,10 @@ export default function ProductItem({
 
             <div className="absolute bottom-[20%] left-1/2 transform -translate-x-1/2 hidden md:flex space-x-2 items-center justify-center opacity-0 translate-y-5 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 z-50">
                 <div className="w-[100px] text-center text-xs font-semibold bg-white shadow-sm p-2 rounded-sm cursor-pointer">
-                    <Link href="">MUA NGAY</Link>
+                    <Link href="/">MUA NGAY</Link>
                 </div>
                 <div className="w-[110px] text-center text-xs font-semibold bg-white shadow-sm p-2 rounded-sm cursor-pointer">
-                    <Link href="">XEM CHI TIẾT</Link>
+                    <Link href="/">XEM CHI TIẾT</Link>
                 </div>
             </div>
         </div>
