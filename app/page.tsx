@@ -9,8 +9,8 @@ import Image from "next/image";
 import "@/styles/swiper-custom.css";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import ProductItem from "./components/ProductItem";
-import Header from "./components/Header";
+import ProductItem from "@/components/ProductItem";
+import Header from "@/components/Header";
 
 type Review = {
   rating: number;

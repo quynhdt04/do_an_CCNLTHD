@@ -1,13 +1,13 @@
 "use client";
 
-import ProductItem from "@/app/components/ProductItem";
+import ProductItem from "@/components/ProductItem";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Product {
     id: string;
-    name: string;
+    title: string;
     price: number;
     images: string[];
     discount?: number;
@@ -36,10 +36,10 @@ export default function Cart() {
 
     useEffect(() => {
         const fakeProducts: Product[] = [
-            { id: "product_1", name: "Quần bò", price: 1599000, images: ["/do.jpg", "/vest.png", "/quan.jpg"] },
-            { id: "product_2", name: "Áo khoác", price: 1899000, images: ["/vest.png", "/do.jpg", "/quan.jpg"] },
-            { id: "product_3", name: "Váy hoa", price: 990000, images: ["/quan.jpg", "/vest.png"], discount: 50 },
-            { id: "product_4", name: "Váy hoa", price: 990000, images: ["/quan.jpg"], discount: 80 },
+            { id: "product_1", title: "Quần bò", price: 1599000, images: ["/do.jpg", "/vest.png", "/quan.jpg"] },
+            { id: "product_2", title: "Áo khoác", price: 1899000, images: ["/vest.png", "/do.jpg", "/quan.jpg"] },
+            { id: "product_3", title: "Váy hoa", price: 990000, images: ["/quan.jpg", "/vest.png"], discount: 50 },
+            { id: "product_4", title: "Váy hoa", price: 990000, images: ["/quan.jpg"], discount: 80 },
         ];
         setProducts(fakeProducts);
     }, []);

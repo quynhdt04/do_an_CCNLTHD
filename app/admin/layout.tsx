@@ -25,8 +25,8 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { AdminSidebar } from '../components/admin/AdminSidebar';
 import { Toaster } from 'sonner';
+import { AdminSidebar } from '@/components/admin/AdminSidebar';
 
 
 const menuGroups = [
@@ -40,7 +40,7 @@ const menuGroups = [
         children: [
             { href: "/admin/products", label: "Sản phẩm", icon: PackageSearch },
             { href: "/admin/categories", label: "Danh mục", icon: ChartBarStacked },
-            { href: "/admin/brands", label: "Thương hiệu", icon: Tags },
+            // { href: "/admin/brands", label: "Thương hiệu", icon: Tags },
             { href: "/admin/stock", label: "Kho tồn", icon: Container },
         ],
     },
@@ -48,7 +48,7 @@ const menuGroups = [
         group: "Quản lý đơn hàng",
         children: [
             { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingCart },
-            { href: "/admin/shipping", label: "Vận chuyển", icon: Truck },
+            // { href: "/admin/shipping", label: "Vận chuyển", icon: Truck },
             { href: "/admin/cancel", label: "Hủy đơn", icon: Ban },
         ],
     },

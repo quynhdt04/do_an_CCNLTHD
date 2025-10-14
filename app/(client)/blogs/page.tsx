@@ -1,7 +1,7 @@
+import ListNewPost from "@/components/ListNewPost";
+import ListPost from "@/components/ListPost";
 import Image from "next/image";
 import Link from "next/link";
-import ListPost from "../../components/ListPost";
-import ListNewPost from "@/app/components/ListNewPost";
 
 async function getPost() {
     const res = await fetch("https://newsapi.org/v2/everything?q=tesla&from=2025-09-08&sortBy=publishedAt&apiKey=9a2d50b8e0c643f88476cc70f48eb632")
