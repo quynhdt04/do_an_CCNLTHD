@@ -1,26 +1,26 @@
 "use client";
 
-import { ChevronRight, Heart, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
+import {
+  ChevronRight,
+  Heart,
+  Menu,
+  Search,
+  ShoppingCart,
+  UserRound,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 
 const navItems = [
-    { name: "TRANG CHỦ", path: "/" },
-    {
-        name: "SẢN PHẨM",
-        path: "/products",
-        children: [
-            { name: "Áo khoác", path: "/products/ao" },
-            { name: "Chân váy", path: "/products/chan-vay" },
-            { name: "Quần", path: "/products/quan" },
-        ],
-    },
-    { name: "BLOG", path: "/blogs" },
-    { name: "LIÊN HỆ", path: "/contact" },
+  { name: "TRANG CHỦ", path: "/" },
+  { name: "SẢN PHẨM", path: "/products" },
+  { name: "BLOG", path: "/blogs" },
+  { name: "LIÊN HỆ", path: "/contact" },
 ];
 
 export default function Header() {
