@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { useState } from "react";
+import { saveProductView } from "@/lib/recentlyViewed";
 
 interface Product {
     id: string;
@@ -13,6 +14,8 @@ interface Product {
     price: number;
     images: string[];
     discountPercentage?: number;
+    thumbnail?: string;
+    rating?: number;
 }
 
 interface ProductItemProps {
@@ -39,8 +42,19 @@ export default function ProductItem({
         swipers[product.id]?.slideTo(index);
     };
 
+    const handleProductClick = () => {
+        saveProductView({
+            id: Number(product.id),
+            title: product.title,
+            price: product.price,
+            discountPercentage: product.discountPercentage || 0,
+            thumbnail: product.thumbnail || product.images[0],
+            rating: product.rating || 0,
+        });
+    };
+
     return (
-            <Link href={`/products/${product.id}`}>
+            <Link href={`/products/${product.id}`} onClick={handleProductClick}>
         <div
             className="mx-auto relative space-y-2 group w-full max-w-xs"
             onMouseEnter={() => hasMultipleImages && setHovered(true)}
