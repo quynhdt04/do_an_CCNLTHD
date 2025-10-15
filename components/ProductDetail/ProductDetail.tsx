@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { Separator } from "@/components/ui/separator"
 import { useProductData } from "./hooks/useProductData"
 import { calculateAverageRating } from "./utils/productHelpers"
@@ -12,6 +13,8 @@ import { ProductFeatures } from "./components/ProductFeatures"
 import { ProductDetails } from "./components/ProductDetails"
 import { ProductReviews } from "./components/ProductReviews"
 import { RelatedProducts } from "./components/RelatedProducts"
+import { RecentlyViewedProducts } from "./components/RecentlyViewedProducts"
+import { saveProductView } from "@/lib/recentlyViewed"
 
 interface ProductDetailProps {
   productId?: string
@@ -19,6 +22,19 @@ interface ProductDetailProps {
 
 export function ProductDetail({ productId }: ProductDetailProps) {
   const { product, loading, error } = useProductData(productId)
+
+  useEffect(() => {
+    if (product) {
+      saveProductView({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        discountPercentage: product.discountPercentage,
+        thumbnail: product.thumbnail,
+        rating: product.rating,
+      })
+    }
+  }, [product])
 
   if (loading) {
     return <ProductDetailSkeleton />
@@ -68,6 +84,8 @@ export function ProductDetail({ productId }: ProductDetailProps) {
         <ProductReviews reviews={product.reviews} />
 
         <RelatedProducts category={product.category} currentProductId={product.id} />
+
+        <RecentlyViewedProducts />
       </main>
 
       <ProductFooter />

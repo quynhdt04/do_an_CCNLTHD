@@ -22,7 +22,7 @@ export default async function BlogPage() {
   const dataNew = await getNewPost();
 
   const articles = data.articles || [];
-  const newArticles = dataNew.articles.slice(0, 5) || [];
+  const newArticles = dataNew.articles?.slice(0, 5) || [];
 
   return (
     <>
