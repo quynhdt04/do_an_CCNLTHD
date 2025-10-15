@@ -1,38 +1,36 @@
 "use client";
-
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import ItemPostSkeleton from "./ItemPostSkeleton";
 
 export default function ListNewPost({ newArticles }: { newArticles: any[] }) {
 
-    const router = useRouter();
-
-    const handleClick = (article: any, index: number) => {
-        localStorage.setItem("selectedArticle", JSON.stringify(article));
-        router.push(`/blogs/${index}`);
-    };
-
-    return (
-        <div className="grid space-y-4 bg-white">
-            {newArticles && (
-                newArticles.map((item: any, index: number) => (
-                    <div key={index} className="flex flex-col justify-center items-center cursor-pointer"
-                        onClick={() => handleClick(item, index)}>
-                        <div className="relative w-full h-[220px]">
-                            <Image
-                                src={item.urlToImage || "/fallback.jpg"}
-                                alt={item.title}
-                                fill
-                                className="object-cover rounded-lg"
-                                unoptimized
-                            />
-                        </div>
-                        <div className="text-md font-semibold uppercase text-center line-clamp-2">
-                            {item.title}
-                        </div>
-                    </div>
-                ))
-            )}
-        </div>
-    )
+  return (
+    <div className="grid space-y-4 bg-white">
+      {newArticles.length > 0 ? 
+        newArticles.map((item: any, index: number) => (
+          <Link
+            href={`/blogs/${item.id}`}
+            key={index}
+            className="flex flex-col justify-center items-center cursor-pointer"
+          >
+            <div className="relative w-full h-[220px]">
+              <Image
+                src={item.image || "/fallback.jpg"}
+                alt={item.title}
+                fill
+                className="object-cover rounded-lg"
+                unoptimized
+              />
+            </div>
+            <div className="text-md font-semibold uppercase text-center line-clamp-2">
+              {item.title}
+            </div>
+          </Link>
+        )): 
+        Array.from({length : 4}).map((_,index) => (
+          <ItemPostSkeleton key={index} isNew={true}/>
+        ))}
+    </div>
+  );
 }
