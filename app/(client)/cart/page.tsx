@@ -10,6 +10,7 @@ import ProductItem from "@/app/components/ProductItem";
 interface Product {
   id: string;
   name: string;
+  title: string;
   price: number;
   images: string[];
   discount?: number;
@@ -26,6 +27,7 @@ export default function Cart() {
       {
         id: "product_1",
         name: "Quần bò",
+        title: "Quần bò",
         price: 1599000,
         images: ["/do.jpg"],
         quantity: 1,
@@ -33,6 +35,7 @@ export default function Cart() {
       {
         id: "product_2",
         name: "Áo khoác",
+        title: "Áo khoác",
         price: 1899000,
         images: ["/vest.png"],
         quantity: 1,
@@ -40,6 +43,7 @@ export default function Cart() {
       {
         id: "product_3",
         name: "Váy hoa",
+        title: "Váy hoa",
         price: 990000,
         images: ["/quan.jpg"],
         discount: 50,
