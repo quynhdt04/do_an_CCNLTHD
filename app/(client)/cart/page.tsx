@@ -1,280 +1,238 @@
 "use client";
 
-import ProductItem from "@/components/ProductItem";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import ProductItem from "@/components/ProductItem";
 
 interface Product {
-    id: string;
-    title: string;
-    price: number;
-    images: string[];
-    discount?: number;
+  id: string;
+  name: string;
+  title: string;
+  price: number;
+  images: string[];
+  discount?: number;
+  quantity: number;
 }
 
 export default function Cart() {
-    const [quantity, setQuantity] = useState(1);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedIndexes, setSelectedIndexes] = useState<{ [key: string]: number }>({});
+  const [swipers, setSwipers] = useState<{ [key: string]: any }>({});
 
-    const [swipers, setSwipers] = useState<{ [key: string]: any }>({});
-    const [products, setProducts] = useState<Product[]>([]);
-    const [selectedIndexes, setSelectedIndexes] = useState<{ [key: string]: number }>({});
+  useEffect(() => {
+    const fakeProducts: Product[] = [
+      {
+        id: "product_1",
+        name: "Quần bò",
+        title: "Quần bò",
+        price: 1599000,
+        images: ["/do.jpg"],
+        quantity: 1,
+      },
+      {
+        id: "product_2",
+        name: "Áo khoác",
+        title: "Áo khoác",
+        price: 1899000,
+        images: ["/vest.png"],
+        quantity: 1,
+      },
+      {
+        id: "product_3",
+        name: "Váy hoa",
+        title: "Váy hoa",
+        price: 990000,
+        images: ["/quan.jpg"],
+        discount: 50,
+        quantity: 1,
+      },
+    ];
+    setProducts(fakeProducts);
+  }, []);
 
-    const handleDecrease = () => {
-        setQuantity((prev) => Math.max(1, prev - 1));
-    };
+  const handleIncrease = (id: string) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, quantity: p.quantity + 1 } : p))
+    );
+  };
 
-    const handleIncrease = () => {
-        setQuantity((prev) => prev + 1);
-    };
+  const handleDecrease = (id: string) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, quantity: Math.max(1, p.quantity - 1) } : p))
+    );
+  };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = parseInt(e.target.value, 10);
-        if (isNaN(value) || value < 1) value = 1;
-        setQuantity(value);
-    };
+  const handleChange = (id: string, value: number) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, quantity: Math.max(1, value) } : p))
+    );
+  };
 
-    useEffect(() => {
-        const fakeProducts: Product[] = [
-            { id: "product_1", title: "Quần bò", price: 1599000, images: ["/do.jpg", "/vest.png", "/quan.jpg"] },
-            { id: "product_2", title: "Áo khoác", price: 1899000, images: ["/vest.png", "/do.jpg", "/quan.jpg"] },
-            { id: "product_3", title: "Váy hoa", price: 990000, images: ["/quan.jpg", "/vest.png"], discount: 50 },
-            { id: "product_4", title: "Váy hoa", price: 990000, images: ["/quan.jpg"], discount: 80 },
-        ];
-        setProducts(fakeProducts);
-    }, []);
-    return (
-        <>
-            <div className="xl:px-40 lg:px-0 md:px-0 sm:px-5 px-5 py-4">
-                <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4 py-10">
-                    <span className="text-xl md:text-4xl font-semibold">
-                        Giỏ hàng của bạn
-                    </span>
-                    <span className="text-sm font-semibold text-gray-500 capitalize">
-                        có 3 sản phẩm trong giỏ hàng
-                    </span>
+  const handleRemove = (id: string) => {
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const getTotal = (price: number, quantity: number, discount?: number) => {
+    const finalPrice = discount ? price * (1 - discount / 100) : price;
+    return finalPrice * quantity;
+  };
+
+  const totalCart = products.reduce(
+    (acc, p) => acc + getTotal(p.price, p.quantity, p.discount),
+    0
+  );
+
+  return (
+    <>
+      <div className="xl:px-40 lg:px-10 md:px-6 sm:px-4 px-4 py-4">
+        <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4 py-10">
+          <span className="text-xl md:text-4xl font-semibold">Giỏ hàng của bạn</span>
+          <span className="text-sm font-semibold text-gray-500 capitalize">
+            có {products.length} sản phẩm trong giỏ hàng
+          </span>
+        </div>
+
+        {/* Desktop Table */}
+        <table className="w-full border border-gray-100 table-auto hidden md:table">
+          <thead className="bg-[#F9F9F9]">
+            <tr>
+              <th className="p-2 text-left">Sản phẩm</th>
+              <th className="p-2 text-center">Đơn giá</th>
+              <th className="p-2 text-center">Số lượng</th>
+              <th className="p-2 text-center">Tổng</th>
+              <th className="p-2 text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <tr key={p.id} className="border-t border-gray-100">
+                <td className="p-2 flex items-center gap-3">
+                  <Image src={p.images[0]} alt={p.name} width={60} height={60} className="rounded-md" />
+                  <span>{p.name}</span>
+                </td>
+                <td className="text-center">
+                  {p.discount ? (
+                    <>
+                      <span className="line-through text-sm text-gray-400">{p.price.toLocaleString()}₫</span>
+                      <br />
+                      <span className="text-red-500 font-semibold">
+                        {(p.price * (1 - p.discount / 100)).toLocaleString()}₫
+                      </span>
+                    </>
+                  ) : (
+                    <span>{p.price.toLocaleString()}₫</span>
+                  )}
+                </td>
+                <td className="text-center">
+                  <div className="flex justify-center items-center gap-2">
+                    <Button size="sm" onClick={() => handleDecrease(p.id)}>-</Button>
+                    <input
+                      type="number"
+                      min={1}
+                      value={p.quantity}
+                      onChange={(e) => handleChange(p.id, parseInt(e.target.value))}
+                      className="w-10 h-8 text-center rounded border text-sm"
+                    />
+                    <Button size="sm" onClick={() => handleIncrease(p.id)}>+</Button>
+                  </div>
+                </td>
+                <td className="text-center font-semibold">
+                  {getTotal(p.price, p.quantity, p.discount).toLocaleString()}₫
+                </td>
+                <td className="text-center">
+                  <Button variant="destructive" size="sm" onClick={() => handleRemove(p.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Mobile View */}
+        <div className="md:hidden space-y-6">
+          {products.map((p) => (
+            <div key={p.id} className="border rounded-lg p-4 flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <Image src={p.images[0]} alt={p.name} width={60} height={60} className="rounded-md" />
+                <div>
+                  <h3 className="font-semibold">{p.name}</h3>
+                  <p className="text-sm text-gray-500">
+                    {p.discount ? (
+                      <>
+                        <span className="line-through">{p.price.toLocaleString()}₫</span>{" "}
+                        <span className="text-red-500 font-semibold">
+                          {(p.price * (1 - p.discount / 100)).toLocaleString()}₫
+                        </span>
+                      </>
+                    ) : (
+                      <span>{p.price.toLocaleString()}₫</span>
+                    )}
+                  </p>
                 </div>
-                <table className="w-full border border-gray-100 table-auto hidden md:table">
-                    <thead className="border border-gray-100 bg-[#F9F9F9]">
-                        <tr>
-                            <th className="p-2 text-left">Sản phẩm</th>
-                            <th className="p-2 text-center">Mô tả</th>
-                            <th className="p-2 text-center">Đơn giá</th>
-                            <th className="p-2 text-center">Số lượng</th>
-                            <th className="p-2 text-center">Tổng</th>
-                            <th className="p-2 text-center">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="border-t border-gray-100">
-                            <td className="p-2 text-center align-middle">
-                                <Image src="/vest.png" alt="vest" width={80} height={100} />
-                            </td>
-                            <td className="p-2 text-center align-middle whitespace-normal break-words w-[300px]">
-                                <Link
-                                    href="/products/123"
-                                    className="text-xs text-blue-500 font-semibold"
-                                >
-                                    Áo khoác vest dài tay cơ bản giao một hàng khuy - Xám - S
-                                </Link>
-                            </td>
-                            <td className="p-2 text-center align-middle">
-                                <span className="text-xs font-semibold">1.502.000 vnđ</span>
-                            </td>
-                            <td className="p-2 text-center align-middle">
-                                <div className="flex items-center justify-center gap-1">
-                                    <button
-                                        type="button"
-                                        aria-label="Giảm số lượng"
-                                        onClick={handleDecrease}
-                                        className="w-6 h-6 flex items-center justify-center rounded border bg-white text-gray-600 hover:bg-gray-100 active:scale-95 cursor-pointer text-sm"
-                                    >
-                                        -
-                                    </button>
-
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={quantity}
-                                        onChange={handleChange}
-                                        className="w-8 h-6 text-center rounded border text-sm focus:outline-none focus:ring-1 focus:ring-blue-400
-                                            [appearance:textfield] 
-                                            [&::-webkit-outer-spin-button]:appearance-none 
-                                            [&::-webkit-inner-spin-button]:appearance-none"
-                                    />
-                                    <button
-                                        type="button"
-                                        aria-label="Tăng số lượng"
-                                        onClick={handleIncrease}
-                                        className="w-6 h-6 flex items-center justify-center rounded border bg-white text-gray-600 hover:bg-gray-100 active:scale-95 cursor-pointer text-sm"
-                                    >
-                                        +
-                                    </button>
-                                </div>
-
-                            </td>
-                            <td className="p-2 text-center align-middle">
-                                <span className="text-xs font-semibold">3.004.000 vnđ</span>
-                            </td>
-                            <td className="p-2 text-center align-middle">
-                                <button className="text-xs text-blue-500 font-semibold">Xóa</button>
-                            </td>
-                        </tr>
-                        <tr className="border-t border-gray-100">
-                            <td className="p-2 text-center align-middle">
-                                <Image src="/vest.png" alt="vest" width={80} height={100} />
-                            </td>
-                            <td className="p-2 text-center align-middle whitespace-normal break-words w-[300px]">
-                                <Link
-                                    href="/products/123"
-                                    className="text-xs text-blue-500 font-semibold"
-                                >
-                                    Áo khoác vest dài tay cơ bản giao một hàng khuy - Xám - S
-                                </Link>
-                            </td>
-                            <td className="p-2 text-center align-middle">
-                                <span className="text-xs font-semibold">1.502.000 vnđ</span>
-                            </td>
-                            <td className="p-2 text-center align-middle">
-                                <div className="flex items-center justify-center gap-1">
-                                    <button
-                                        type="button"
-                                        aria-label="Giảm số lượng"
-                                        onClick={handleDecrease}
-                                        className="w-6 h-6 flex items-center justify-center rounded border bg-white text-gray-600 hover:bg-gray-100 active:scale-95 cursor-pointer text-sm"
-                                    >
-                                        -
-                                    </button>
-
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={quantity}
-                                        onChange={handleChange}
-                                        className="w-8 h-6 text-center rounded border text-sm focus:outline-none focus:ring-1 focus:ring-blue-400
-                                            [appearance:textfield] 
-                                            [&::-webkit-outer-spin-button]:appearance-none 
-                                            [&::-webkit-inner-spin-button]:appearance-none"
-                                    />
-                                    <button
-                                        type="button"
-                                        aria-label="Tăng số lượng"
-                                        onClick={handleIncrease}
-                                        className="w-6 h-6 flex items-center justify-center rounded border bg-white text-gray-600 hover:bg-gray-100 active:scale-95 cursor-pointer text-sm"
-                                    >
-                                        +
-                                    </button>
-                                </div>
-
-                            </td>
-                            <td className="p-2 text-center align-middle">
-                                <span className="text-xs font-semibold">3.004.000 vnđ</span>
-                            </td>
-                            <td className="p-2 text-center align-middle">
-                                <button className="text-xs text-blue-500 font-semibold">Xóa</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <table className="w-full border border-gray-100 table-auto md:hidden table">
-                    <thead className="border border-gray-100 bg-[#F9F9F9]">
-                        <tr>
-                            <th className="p-2 text-left">Sản phẩm</th>
-                            <th className="p-2 text-center">Mô tả</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="border-t border-gray-100">
-                            <td className="p-2 text-center align-middle">
-                                <Image src="/vest.png" alt="vest" width={140} height={160} />
-                            </td>
-                            <td className="p-2 text-center align-middle flex flex-col space-y-2">
-                                <Link
-                                    href="/products/123"
-                                    className="text-xs text-blue-500 font-semibold whitespace-normal break-words"
-                                >
-                                    Áo khoác vest dài tay cơ bản giao một hàng khuy - Xám - S
-                                </Link>
-                                <span className="text-xs font-semibold">1.502.000 vnđ</span>
-                                <div className="flex items-center justify-center gap-1">
-                                    <button
-                                        type="button"
-                                        aria-label="Giảm số lượng"
-                                        onClick={handleDecrease}
-                                        className="w-6 h-6 flex items-center justify-center rounded border bg-white text-gray-600 hover:bg-gray-100 active:scale-95 cursor-pointer text-sm"
-                                    >
-                                        -
-                                    </button>
-
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={quantity}
-                                        onChange={handleChange}
-                                        className="w-8 h-6 text-center rounded border text-sm focus:outline-none focus:ring-1 focus:ring-blue-400
-                                            [appearance:textfield] 
-                                            [&::-webkit-outer-spin-button]:appearance-none 
-                                            [&::-webkit-inner-spin-button]:appearance-none"
-                                    />
-                                    <button
-                                        type="button"
-                                        aria-label="Tăng số lượng"
-                                        onClick={handleIncrease}
-                                        className="w-6 h-6 flex items-center justify-center rounded border bg-white text-gray-600 hover:bg-gray-100 active:scale-95 cursor-pointer text-sm"
-                                    >
-                                        +
-                                    </button>
-                                </div>
-                                <span className="text-xs font-semibold">3.004.000 vnđ</span>
-                                <button className="text-xs text-blue-500 font-semibold">Xóa</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div className="flex justify-end items-end gap-1 py-5">
-                    <span className="text-base">
-                        Tổng số tiền:
-                    </span>
-                    <span className="text-xl font-bold">
-                        1.999.000 vnđ
-                    </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <Button size="sm" onClick={() => handleDecrease(p.id)}>-</Button>
+                  <input
+                    type="number"
+                    min={1}
+                    value={p.quantity}
+                    onChange={(e) => handleChange(p.id, parseInt(e.target.value))}
+                    className="w-10 h-8 text-center rounded border text-sm"
+                  />
+                  <Button size="sm" onClick={() => handleIncrease(p.id)}>+</Button>
                 </div>
-                <div className="flex-col md:flex-row border-t border-gray-100 flex items-center justify-between">
-                    <div className="px-4 py-2 mt-5 w-full md:w-auto text-center border border-gray-200 font-semibold uppercase text-sm md:text-base cursor-pointer">
-                        <Link href="/">
-                            tiếp tục mua sắm
-                        </Link>
-                    </div>
-                    <div className="px-4 py-2 mt-5  w-full md:w-auto text-center bg-black text-white uppercase text-sm md:text-base cursor-pointer">
-                        <Link href="/">
-                            tiến hành thanh toán
-                        </Link>
-                    </div>
-                </div>
+                <Button variant="destructive" size="sm" onClick={() => handleRemove(p.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-right font-semibold">
+                Tổng: {getTotal(p.price, p.quantity, p.discount).toLocaleString()}₫
+              </p>
             </div>
+          ))}
+        </div>
 
-            <div className="border-t border-gray-100 my-8">
+        {/* Tổng tiền và hành động */}
+        <div className="flex justify-end items-end gap-2 py-5">
+          <span className="text-base">Tổng số tiền:</span>
+          <span className="text-xl font-bold">{totalCart.toLocaleString()}₫</span>
+        </div>
 
+        <div className="flex-col md:flex-row border-t border-gray-100 flex items-center justify-between gap-4">
+          <Link href="/" passHref>
+            <div className="px-4 py-2 mt-5 w-full md:w-auto text-center border border-gray-200 font-semibold uppercase text-sm md:text-base cursor-pointer">
+              Tiếp tục mua sắm
             </div>
-
-            <div className="xl:px-40 md:px-5 md:py-5 px-5 py-10">
-                <div className="text-xl text-gray-600 uppercase text-left font-semibold">
-                    cÓ thể bạn cũng thích
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2  lg:grid-cols-4 gap-4 py-5">
-                    {products.map((product) => (
-                        <ProductItem
-                            key={product.id}
-                            product={product}
-                            selectedIndexes={selectedIndexes}
-                            setSelectedIndexes={setSelectedIndexes}
-                            swipers={swipers}
-                            setSwipers={setSwipers}
-                        />
-                    ))}
-                </div>
+          </Link>
+          <Link href="/checkout" passHref>
+            <div className="px-4 py-2 mt-5 w-full md:w-auto text-center bg-black text-white uppercase text-sm md:text-base cursor-pointer hover:bg-gray-800 transition">
+              Tiến hành thanh toán
             </div>
-        </>
-    )
+          </Link>
+        </div>
+      </div>
+
+      {/* Gợi ý sản phẩm */}
+      <div className="xl:px-40 md:px-5 px-5 py-10">
+        <h2 className="text-xl text-gray-600 uppercase font-semibold mb-4">Có thể bạn cũng thích</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <ProductItem
+              key={product.id}
+              product={product}
+              selectedIndexes={selectedIndexes}
+              setSelectedIndexes={setSelectedIndexes}
+              swipers={swipers}
+              setSwipers={setSwipers}
+            />
+          ))}
+        </div>
+      </div>
+    </>
+  );
 }
