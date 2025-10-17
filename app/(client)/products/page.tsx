@@ -19,12 +19,13 @@ export default function ProductPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true); // 🧩 trạng thái loading
   const itemsPerPage = 12;
 
-  // Gọi API thật DummyJSON (chỉ lấy sản phẩm thời trang)
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true);
         const categories = [
           "mens-shirts",
           "womens-shoes",
@@ -37,7 +38,6 @@ export default function ProductPage() {
 
         const allProducts: Product[] = [];
 
-        // Gọi API cho từng category
         for (const cat of categories) {
           const res = await fetch(`https://dummyjson.com/products/category/${cat}`);
           const data = await res.json();
@@ -45,7 +45,7 @@ export default function ProductPage() {
           const formatted = data.products.map((item: any) => ({
             id: item.id.toString(),
             title: item.title,
-            price: item.price * 25000, // 💰 chuyển sang VNĐ
+            price: item.price * 25000,
             images: item.images && item.images.length > 0 ? item.images : [item.thumbnail],
             discount: item.discountPercentage,
             category: item.category,
@@ -57,20 +57,20 @@ export default function ProductPage() {
         setProducts(allProducts);
       } catch (error) {
         console.error("❌ Lỗi khi tải sản phẩm:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProducts();
   }, []);
 
-  // Lọc sản phẩm theo category & search
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
     const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
@@ -83,25 +83,40 @@ export default function ProductPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Category mapping hiển thị tiếng Việt
   const categoryNames: { [key: string]: string } = {
-    "mens-shirts": "Mens Shirts",
-    "womens-shoes": "Womens Shoes",
-    "mens-shoes": "Mens Shoes",
-    "womens-dresses": "Womens Dresses",
-    "tops": "Tops",
-    "womens-bags": "Womens Bags",
-    "womens-jewellery": "Womens Jewellery",
+    "mens-shirts": "Áo sơ mi nam",
+    "womens-shoes": "Giày nữ",
+    "mens-shoes": "Giày nam",
+    "womens-dresses": "Đầm nữ",
+    "tops": "Áo thun / Áo kiểu",
+    "womens-bags": "Túi xách nữ",
+    "womens-jewellery": "Trang sức nữ",
   };
+
+  // 🎨 Skeleton UI cho sản phẩm đang tải
+  const renderSkeleton = () => (
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div
+          key={i}
+          className="border rounded-lg p-4 animate-pulse bg-white shadow-sm"
+        >
+          <div className="bg-gray-200 h-40 w-full rounded-md mb-3"></div>
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="xl:px-40 lg:px-10 md:px-5 sm:px-5 px-4 py-6">
       <div className="flex flex-col md:flex-row gap-6">
-        {/* BÊN TRÁI - FILTER + SEARCH */}
+        {/* Sidebar */}
         <aside className="w-full md:w-1/4 border border-gray-200 rounded-lg p-4 h-fit">
           <div className="text-lg font-semibold mb-3">Bộ lọc</div>
 
-          {/* Ô tìm kiếm */}
+          {/* Tìm kiếm */}
           <input
             type="text"
             placeholder="Tìm sản phẩm..."
@@ -110,7 +125,7 @@ export default function ProductPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          {/* Bộ lọc category */}
+          {/* Category */}
           <div className="space-y-2">
             <button
               className={`block w-full text-left px-3 py-2 rounded-md ${
@@ -135,14 +150,16 @@ export default function ProductPage() {
           </div>
         </aside>
 
-        {/* BÊN PHẢI - SẢN PHẨM */}
+        {/* Danh sách sản phẩm */}
         <main className="flex-1">
           <div className="flex items-center justify-between mb-4">
             <div className="text-base md:text-lg font-semibold">TẤT CẢ SẢN PHẨM</div>
           </div>
 
-          {/* Lưới sản phẩm */}
-          {paginatedProducts.length > 0 ? (
+          {/* Hiển thị khi loading */}
+          {loading ? (
+            renderSkeleton()
+          ) : paginatedProducts.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {paginatedProducts.map((product) => (
                 <ProductItem
@@ -160,7 +177,7 @@ export default function ProductPage() {
           )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!loading && totalPages > 1 && (
             <div className="flex justify-center items-center mt-8 flex-wrap gap-2">
               <button
                 className="px-3 py-1 border rounded-md disabled:opacity-50"
