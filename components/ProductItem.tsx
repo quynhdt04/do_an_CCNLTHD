@@ -8,6 +8,12 @@ import "swiper/css";
 import { useState } from "react";
 import { saveProductView } from "@/lib/recentlyViewed";
 import { useRouter } from "next/navigation";
+import { useFavorite } from "@/hooks/useFavorite";
+import { useCart } from "@/hooks/useCart";
+import { useToast } from "@/hooks/use-toast";
+import { CartToast } from "@/components/ui/cart-toast";
+import { FavoriteToast } from "@/components/ui/favorite-toast";
+import LoginModal from "./LoginModal";
 
 interface Product {
   id: string;
@@ -37,7 +43,11 @@ export default function ProductItem({
   setSwipers,
 }: ProductItemProps) {
   const [hovered, setHovered] = useState(false);
+  const [openLogin, setOpenLogin] = useState(false);
   const router = useRouter();
+  const { isFavorite, isLoggedIn, toggleFavorite } = useFavorite(product.id);
+  const { addToCart, isLoggedIn: isCartLoggedIn } = useCart();
+  const { toast } = useToast();
 
   const hasMultipleImages = product.images.length > 1;
 
@@ -57,9 +67,62 @@ export default function ProductItem({
     });
   };
 
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const productData = {
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      discountPercentage: product.discountPercentage,
+      thumbnail: product.thumbnail || product.images[0],
+      images: product.images,
+    };
+    
+    const result = toggleFavorite(productData);
+    
+    if (result.success) {
+      toast({
+        variant: "success",
+        description: <FavoriteToast product={productData} isFavorited={result.isFavorited} />,
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!isCartLoggedIn) {
+      setOpenLogin(true);
+      return;
+    }
+    
+    const productData = {
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      discountPercentage: product.discountPercentage,
+      thumbnail: product.thumbnail || product.images[0],
+      images: product.images,
+    };
+    
+    addToCart(productData, 1);
+    
+    // Show professional toast notification
+    toast({
+      variant: "success",
+      description: <CartToast product={productData} quantity={1} />,
+      duration: 3000,
+    });
+  };
+
   return (
-    <Link href={`/products/${product.id}`} onClick={handleProductClick}>
-      <div
+    <>
+      <Link href={`/products/${product.id}`} onClick={handleProductClick}>
+        <div
         className="mx-auto relative space-y-2 group w-full max-w-xs"
         onMouseEnter={() => hasMultipleImages && setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -114,7 +177,14 @@ export default function ProductItem({
               className="object-cover"
             />
           )}
-          <Heart className="cursor-pointer absolute top-5 right-5 z-10" />
+          {isLoggedIn && (
+            <Heart
+              className={`cursor-pointer absolute top-5 right-5 z-10 transition-colors ${
+                isFavorite ? "fill-red-500 text-red-500" : "text-gray-400 hover:text-red-500"
+              }`}
+              onClick={handleFavoriteClick}
+            />
+          )}
         </div>
         <div className="text-sm text-gray-800 font-semibold truncate w-[200px]">
           {product.title}
@@ -167,13 +237,13 @@ export default function ProductItem({
 
         <div className="absolute bottom-[20%] left-1/2 transform -translate-x-1/2 hidden md:flex space-x-2 items-center justify-center opacity-0 translate-y-5 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 z-50">
           <div
-            className="w-[100px] text-center text-xs font-semibold bg-white shadow-sm p-2 rounded-sm cursor-pointer"
-            onClick={() => router.push(`/`)}
+            className="w-[100px] text-center text-xs font-semibold bg-white shadow-sm p-2 rounded-sm cursor-pointer hover:bg-gray-100"
+            onClick={handleBuyNow}
           >
             MUA NGAY
           </div>
           <div
-            className="w-[110px] text-center text-xs font-semibold bg-white shadow-sm p-2 rounded-sm cursor-pointer"
+            className="w-[110px] text-center text-xs font-semibold bg-white shadow-sm p-2 rounded-sm cursor-pointer hover:bg-gray-100"
             onClick={() => router.push(`/product/${product.id}`)}
           >
             XEM CHI TIẾT
@@ -181,5 +251,13 @@ export default function ProductItem({
         </div>
       </div>
     </Link>
+    
+    {openLogin && (
+      <LoginModal
+        setOpenLogin={setOpenLogin}
+        setOpenRegister={() => {}}
+      />
+    )}
+    </>
   );
 }

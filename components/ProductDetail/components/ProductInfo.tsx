@@ -1,6 +1,11 @@
-import { Star } from "lucide-react"
+"use client"
+
+import { Star, Heart } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ProductData } from "../hooks/useProductData"
+import { useFavorite } from "@/hooks/useFavorite"
+import { useToast } from "@/hooks/use-toast"
+import { FavoriteToast } from "@/components/ui/favorite-toast"
 
 interface ProductInfoProps {
   product: ProductData
@@ -9,6 +14,29 @@ interface ProductInfoProps {
 
 export function ProductInfo({ product, averageRating }: ProductInfoProps) {
   const discountedPrice = product.price * (1 - product.discountPercentage / 100)
+  const { isFavorite, isLoggedIn, toggleFavorite } = useFavorite(product.id)
+  const { toast } = useToast()
+
+  const handleFavoriteClick = () => {
+    const productData = {
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      discountPercentage: product.discountPercentage,
+      thumbnail: product.thumbnail,
+      images: product.images,
+    }
+    
+    const result = toggleFavorite(productData)
+    
+    if (result.success) {
+      toast({
+        variant: "success",
+        description: <FavoriteToast product={productData} isFavorited={result.isFavorited} />,
+        duration: 3000,
+      })
+    }
+  }
 
   return (
     <>
@@ -22,9 +50,19 @@ export function ProductInfo({ product, averageRating }: ProductInfoProps) {
             {product.category}
           </Badge>
         </div>
-        <h1 className="text-4xl lg:text-5xl font-serif font-medium tracking-tight text-balance">
-          {product.title}
-        </h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-4xl lg:text-5xl font-serif font-medium tracking-tight text-balance">
+            {product.title}
+          </h1>
+          {isLoggedIn && (
+            <Heart
+              className={`cursor-pointer h-8 w-8 flex-shrink-0 transition-colors ${
+                isFavorite ? "fill-red-500 text-red-500" : "text-gray-400 hover:text-red-500"
+              }`}
+              onClick={handleFavoriteClick}
+            />
+          )}
+        </div>
       </div>
 
       {/* Rating */}

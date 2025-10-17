@@ -29,7 +29,7 @@ export default function LoginModal({ setOpenLogin, setOpenRegister }: LoginModal
       });
 
     if (res.status === 200 && res.data?.accessToken) {
-       localStorage.setItem("token", res.data.accessToken);
+       localStorage.setItem("console_token", res.data.accessToken);
        localStorage.setItem("user", JSON.stringify(res.data.user));
        setOpenLogin(false);
        setTimeout(() => {

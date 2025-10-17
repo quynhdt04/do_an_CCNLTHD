@@ -68,7 +68,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
 
             <Separator />
 
-            <ProductActions stock={product.stock} minimumOrderQuantity={product.minimumOrderQuantity} />
+            <ProductActions stock={product.stock} minimumOrderQuantity={product.minimumOrderQuantity} product={product} />
 
             <Separator />
 
