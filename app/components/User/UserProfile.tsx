@@ -3,19 +3,18 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-// Thêm các icon cần thiết
 import { Heart, ShoppingCart, LogOut, PackageOpen, Trash2 } from "lucide-react";
+import { FavoriteProduct } from "@/hooks/useFavorite";
+import { CartItem } from "@/hooks/useCart";
 
-// Định nghĩa kiểu dữ liệu cho sản phẩm
 interface Product {
   id: string;
   name: string;
   price: number;
   image: string;
-  slug: string; // Thêm slug để tạo link thân thiện với SEO
+  slug: string;
 }
 
-// Giao diện cho một trạng thái trống
 const EmptyState = ({
   icon,
   message,
@@ -45,33 +44,64 @@ export default function UserProfile() {
   const [cart, setCart] = useState<Product[]>([]);
 
   useEffect(() => {
-    // --- Logic lấy dữ liệu người dùng ---
     const storedUser = localStorage.getItem("user");
     if (!storedUser || storedUser === "undefined") {
-      window.location.href = "/login"; // Chuyển hướng đến trang đăng nhập
+      window.location.href = "/login";
       return;
     }
+
     try {
-      setUser(JSON.parse(storedUser));
+      const userData = JSON.parse(storedUser);
+      setUser(userData);
+
+      const getFavorites = (userId: string): FavoriteProduct[] => {
+        try {
+          const favoritesStr = localStorage.getItem(`favorites_${userId}`);
+          return favoritesStr ? JSON.parse(favoritesStr) : [];
+        } catch (error) {
+          console.error("Lỗi khi đọc favorites:", error);
+          return [];
+        }
+      };
+
+      const getCartItems = (userId: string): CartItem[] => {
+        try {
+          const cartStr = localStorage.getItem(`cart_${userId}`);
+          return cartStr ? JSON.parse(cartStr) : [];
+        } catch (error) {
+          console.error("Lỗi khi đọc cart:", error);
+          return [];
+        }
+      };
+
+      if (userData?.id) {
+        const favorites = getFavorites(userData.id.toString());
+        const cartItems = getCartItems(userData.id.toString());
+
+        const wishlistData: Product[] = favorites.map((item) => ({
+          id: item.id.toString(),
+          name: item.title,
+          price: item.price,
+          image: item.thumbnail || item.images?.[0] || "/default.jpg",
+          slug: `san-pham-${item.id}`,
+        }));
+
+        const cartData: Product[] = cartItems.map((item) => ({
+          id: item.id.toString(),
+          name: item.title,
+          price: item.price,
+          image: item.thumbnail || item.images?.[0] || "/default.jpg",
+          slug: `san-pham-${item.id}`,
+        }));
+
+        setWishlist(wishlistData);
+        setCart(cartData);
+      }
     } catch (err) {
       console.error("Lỗi khi đọc user:", err);
       localStorage.clear();
       window.location.href = "/login";
     }
-
-    // --- Dữ liệu giả lập (thêm slug) ---
-    const fakeWishlist: Product[] = [
-      { id: "1", name: "Áo Sơ Mi Lụa Trắng", price: 499000, image: "/ao.jpg", slug: "ao-so-mi-lua-trang" },
-      { id: "2", name: "Váy Hoa Nhí Vintage", price: 799000, image: "/vay-lien.jpg", slug: "vay-hoa-nhi-vintage" },
-    ];
-    const fakeCart: Product[] = [
-      { id: "3", name: "Áo Khoác Da Biker", price: 1299000, image: "/vest.png", slug: "ao-khoac-da-biker" },
-      { id: "4", name: "Quần Jeans Skinny Fit", price: 899000, image: "/quan.jpg", slug: "quan-jeans-skinny-fit" },
-    ];
-    
-    // Thử nghiệm trạng thái trống bằng cách comment dòng dưới đây
-    setWishlist(fakeWishlist);
-    // setCart(fakeCart);
   }, []);
 
   const handleLogout = () => {
@@ -80,16 +110,46 @@ export default function UserProfile() {
     window.location.href = "/";
   };
 
+  const removeFromFavorites = (productId: string) => {
+    if (!user?.id) return;
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?");
+    if (!confirmDelete) return;
+
+    const key = `favorites_${user.id}`;
+    const favoritesStr = localStorage.getItem(key);
+    if (!favoritesStr) return;
+
+    const favorites: FavoriteProduct[] = JSON.parse(favoritesStr);
+    const updated = favorites.filter((item) => item.id.toString() !== productId);
+    localStorage.setItem(key, JSON.stringify(updated));
+
+    setWishlist((prev) => prev.filter((item) => item.id !== productId));
+  };
+
+  const removeFromCart = (productId: string) => {
+    if (!user?.id) return;
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?");
+    if (!confirmDelete) return;
+
+    const key = `cart_${user.id}`;
+    const cartStr = localStorage.getItem(key);
+    if (!cartStr) return;
+
+    const cartItems: CartItem[] = JSON.parse(cartStr);
+    const updated = cartItems.filter((item) => item.id.toString() !== productId);
+    localStorage.setItem(key, JSON.stringify(updated));
+
+    setCart((prev) => prev.filter((item) => item.id !== productId));
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Tiêu đề trang */}
         <header className="mb-10 text-center">
           <h1 className="text-4xl font-bold text-slate-800 tracking-tight">Tài khoản của bạn</h1>
-<p className="mt-2 text-lg text-slate-600">Quản lý thông tin, đơn hàng và sản phẩm yêu thích.</p>
+          <p className="mt-2 text-lg text-slate-600">Quản lý thông tin, đơn hàng và sản phẩm yêu thích.</p>
         </header>
 
-        {/* Thẻ thông tin người dùng */}
         {user && (
           <div className="bg-gradient-to-br from-white to-gray-100 shadow-lg rounded-2xl p-8 mb-12 flex flex-col sm:flex-row items-center gap-8 transition-shadow duration-300 hover:shadow-xl">
             <Image
@@ -125,8 +185,8 @@ export default function UserProfile() {
           {wishlist.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {wishlist.map((item) => (
-                <Link key={item.id} href={`/products/${item.slug}`} className="group block">
-                  <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-indigo-400 relative">
+                <Link key={item.id} href={`/products/${item.slug}`} className="group block relative">
+                  <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-indigo-400">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -138,8 +198,14 @@ export default function UserProfile() {
                     <p className="text-lg text-red-600 font-bold mt-1">
                       {item.price.toLocaleString("vi-VN")} VNĐ
                     </p>
-                    <button className="absolute top-3 right-3 bg-white/70 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-white hover:bg-indigo-500 transition-colors opacity-0 group-hover:opacity-100">
-<ShoppingCart size={20} />
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        removeFromFavorites(item.id);
+                      }}
+                      className="absolute top-3 right-3 bg-white/70 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-white hover:bg-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 size={20} />
                     </button>
                   </div>
                 </Link>
@@ -165,24 +231,27 @@ export default function UserProfile() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {cart.map((item) => (
-                   <div key={item.id} className="group relative bg-white rounded-xl p-4 shadow-md border border-gray-200/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                     <Link href={`/products/${item.slug}`} className="block">
-                       <Image
-                         src={item.image}
-                         alt={item.name}
-                         width={300}
-                         height={300}
-                         className="rounded-lg w-full h-52 object-cover mb-4"
-                       />
-                       <h4 className="font-semibold text-gray-800 truncate">{item.name}</h4>
-                       <p className="text-lg text-red-600 font-bold mt-1">
-                         {item.price.toLocaleString("vi-VN")} VNĐ
-                       </p>
-                     </Link>
-                     <button className="absolute top-3 right-3 bg-white/70 backdrop-blur-sm p-2 rounded-full text-gray-500 hover:text-white hover:bg-red-500 transition-colors">
-                         <Trash2 size={20} />
-                     </button>
-                   </div>
+                  <div key={item.id} className="group relative bg-white rounded-xl p-4 shadow-md border border-gray-200/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <Link href={`/products/${item.slug}`} className="block">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        width={300}
+                        height={300}
+                        className="rounded-lg w-full h-52 object-cover mb-4"
+                      />
+                      <h4 className="font-semibold text-gray-800 truncate">{item.name}</h4>
+                      <p className="text-lg text-red-600 font-bold mt-1">
+                        {item.price.toLocaleString("vi-VN")} VNĐ
+                      </p>
+                    </Link>
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      className="absolute top-3 right-3 bg-white/70 backdrop-blur-sm p-2 rounded-full text-gray-500 hover:text-white hover:bg-red-500 transition-colors"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
                 ))}
               </div>
               <div className="text-center mt-8">
@@ -195,7 +264,7 @@ export default function UserProfile() {
               </div>
             </>
           ) : (
-             <EmptyState 
+            <EmptyState 
               icon={<PackageOpen size={48} />}
               message="Giỏ hàng của bạn đang trống."
               buttonText="Tiếp tục mua sắm"
