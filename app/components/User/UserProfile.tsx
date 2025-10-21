@@ -83,7 +83,7 @@ export default function UserProfile() {
           name: item.title,
           price: item.price,
           image: item.thumbnail || item.images?.[0] || "/default.jpg",
-          slug: `san-pham-${item.id}`,
+          slug: item.id.toString(),
         }));
 
         const cartData: Product[] = cartItems.map((item) => ({
@@ -91,7 +91,7 @@ export default function UserProfile() {
           name: item.title,
           price: item.price,
           image: item.thumbnail || item.images?.[0] || "/default.jpg",
-          slug: `san-pham-${item.id}`,
+          slug: item.id.toString(),
         }));
 
         setWishlist(wishlistData);
