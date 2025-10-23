@@ -36,7 +36,7 @@ export default function FavoritePopover({ items, onRemove }: FavoritePopoverProp
                   {item.title}
                 </p>
                 <p className="text-xs font-semibold text-red-500">
-                  {item.price.toLocaleString("vi-VN")} VNĐ
+                  {item.price} $
                 </p>
               </div>
             </div>
