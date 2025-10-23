@@ -1,7 +1,7 @@
 // components/header/PopoverWrapper.tsx
-"use client"; // <-- Thêm dòng này vì chúng ta sẽ dùng hook (useState)
+"use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface PopoverWrapperProps {
   trigger: React.ReactNode;
@@ -14,28 +14,69 @@ export default function PopoverWrapper({
   children,
   className = "",
 }: PopoverWrapperProps) {
-  // Sử dụng state để quản lý việc hiển thị popover
   const [isOpen, setIsOpen] = useState(false);
+  // Tạo một ref để tham chiếu đến DOM element của component
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  // Hàm để bật/tắt popover
+  const handleToggle = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  // Sử dụng useEffect để thêm và gỡ bỏ event listener
+  useEffect(() => {
+    // Hàm xử lý khi click ra ngoài
+    function handleClickOutside(event: MouseEvent) {
+      // Nếu ref tồn tại và click không nằm trong element của ref
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setIsOpen(false); // Đóng popover
+      }
+    }
+
+    // Nếu popover đang mở, lắng nghe sự kiện click trên toàn bộ document
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      // Nếu popover đóng, không cần lắng nghe nữa
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    // Cleanup function: Gỡ bỏ event listener khi component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]); // Effect này sẽ chạy lại mỗi khi state `isOpen` thay đổi
 
   return (
-    // Bắt sự kiện mouseEnter và mouseLeave trên thẻ div bao ngoài cùng
-    <div
-      className="relative cursor-pointer"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-    >
-      {trigger}
+    // Gắn ref vào thẻ div bao ngoài cùng
+    <div className="relative inline-block" ref={popoverRef}>
       {/* 
-        Thay thế `hidden group-hover:block` bằng logic dựa trên state 'isOpen'.
-        Nếu isOpen là true, thêm class 'block', ngược lại thêm class 'hidden'.
+        Thêm onClick để toggle.
+        Thêm các class của Tailwind để tạo hiệu ứng hover.
+        - `p-1 rounded-md`: Tạo khoảng đệm và bo góc cho vùng hover.
+        - `transition-colors`: Thêm hiệu ứng chuyển màu mượt mà.
+        - `hover:bg-gray-100`: Thay đổi màu nền khi hover.
       */}
       <div
-        className={`absolute right-0 top-full mt-2 bg-white shadow-lg border border-gray-200 rounded-md z-50 ${className} ${
-          isOpen ? "block" : "hidden"
-        }`}
+        onClick={handleToggle}
+        className="cursor-pointer p-1 rounded-md transition-colors hover:bg-gray-100"
       >
-        {children}
+        {trigger}
       </div>
+
+      {/* 
+        Sử dụng conditional rendering (render có điều kiện).
+        Chỉ render popover content khi `isOpen` là true.
+        Điều này tốt hơn là dùng class 'hidden'.
+      */}
+      {isOpen && (
+        <div
+          // `w-max` để chiều rộng của popover co giãn theo nội dung
+          className={`absolute right-0 top-full mt-2 w-max bg-white shadow-lg border border-gray-200 rounded-md z-50 ${className}`}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 }

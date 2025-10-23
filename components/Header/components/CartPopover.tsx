@@ -35,9 +35,9 @@ export default function CartPopover({ items, onRemove }: CartPopoverProps) {
                 <p className="text-xs font-medium text-gray-800 line-clamp-2">
                   {item.title}
                 </p>
-                <p className="text-xs text-gray-600">SL: {item.quantity}</p>
+                <p className="text-xs text-gray-600">Quantity: {item.quantity}</p>
                 <p className="text-xs font-semibold text-gray-800">
-                  {item.price.toLocaleString("vi-VN")} VNĐ
+                  {item.price} $
                 </p>
               </div>
             </div>
