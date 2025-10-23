@@ -10,7 +10,7 @@ import "@/styles/swiper-custom.css";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ProductItem from "@/components/ProductItem";
-import Header from "@/components/Header";
+import Header from "@/components/Header/Header";
 import ProductItemSkeleton from "@/components/ProductItemSkeleton";
 import CategorySkeleton from "@/components/CategorySkeleton";
 
