@@ -112,7 +112,9 @@ export default function UserProfile() {
 
   const removeFromFavorites = (productId: string) => {
     if (!user?.id) return;
-    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?");
+    const confirmDelete = window.confirm(
+      "Bạn có chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?"
+    );
     if (!confirmDelete) return;
 
     const key = `favorites_${user.id}`;
@@ -120,7 +122,9 @@ export default function UserProfile() {
     if (!favoritesStr) return;
 
     const favorites: FavoriteProduct[] = JSON.parse(favoritesStr);
-    const updated = favorites.filter((item) => item.id.toString() !== productId);
+    const updated = favorites.filter(
+      (item) => item.id.toString() !== productId
+    );
     localStorage.setItem(key, JSON.stringify(updated));
 
     setWishlist((prev) => prev.filter((item) => item.id !== productId));
@@ -128,7 +132,9 @@ export default function UserProfile() {
 
   const removeFromCart = (productId: string) => {
     if (!user?.id) return;
-    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?");
+    const confirmDelete = window.confirm(
+      "Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?"
+    );
     if (!confirmDelete) return;
 
     const key = `cart_${user.id}`;
@@ -136,7 +142,9 @@ export default function UserProfile() {
     if (!cartStr) return;
 
     const cartItems: CartItem[] = JSON.parse(cartStr);
-    const updated = cartItems.filter((item) => item.id.toString() !== productId);
+    const updated = cartItems.filter(
+      (item) => item.id.toString() !== productId
+    );
     localStorage.setItem(key, JSON.stringify(updated));
 
     setCart((prev) => prev.filter((item) => item.id !== productId));
@@ -146,8 +154,12 @@ export default function UserProfile() {
     <div className="bg-slate-50 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <header className="mb-10 text-center">
-          <h1 className="text-4xl font-bold text-slate-800 tracking-tight">Tài khoản của bạn</h1>
-          <p className="mt-2 text-lg text-slate-600">Quản lý thông tin, đơn hàng và sản phẩm yêu thích.</p>
+          <h1 className="text-4xl font-bold text-slate-800 tracking-tight">
+            Tài khoản của bạn
+          </h1>
+          <p className="mt-2 text-lg text-slate-600">
+            Quản lý thông tin, đơn hàng và sản phẩm yêu thích.
+          </p>
         </header>
 
         {user && (
@@ -164,7 +176,9 @@ export default function UserProfile() {
                 {user.firstName} {user.lastName}
               </h2>
               <p className="text-gray-600 mt-1">{user.email}</p>
-              <p className="text-gray-500 text-sm capitalize">Giới tính: {user.gender}</p>
+              <p className="text-gray-500 text-sm capitalize">
+                Giới tính: {user.gender}
+              </p>
             </div>
             <button
               onClick={handleLogout}
@@ -180,12 +194,18 @@ export default function UserProfile() {
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-gray-200">
             <Heart className="text-pink-500" size={28} />
-            <h3 className="text-2xl font-semibold text-gray-800">Sản phẩm yêu thích</h3>
+            <h3 className="text-2xl font-semibold text-gray-800">
+              Sản phẩm yêu thích
+            </h3>
           </div>
           {wishlist.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {wishlist.map((item) => (
-                <Link key={item.id} href={`/products/${item.slug}`} className="group block relative">
+                <Link
+                  key={item.id}
+                  href={`/products/${item.slug}`}
+                  className="group block relative"
+                >
                   <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-indigo-400">
                     <Image
                       src={item.image}
@@ -194,7 +214,9 @@ export default function UserProfile() {
                       height={300}
                       className="rounded-lg w-full h-52 object-cover mb-4"
                     />
-                    <h4 className="font-semibold text-gray-800 truncate group-hover:text-indigo-600">{item.name}</h4>
+                    <h4 className="font-semibold text-gray-800 truncate group-hover:text-indigo-600">
+                      {item.name}
+                    </h4>
                     <p className="text-lg text-red-600 font-bold mt-1">
                       {item.price.toLocaleString("vi-VN")} VNĐ
                     </p>
@@ -212,7 +234,7 @@ export default function UserProfile() {
               ))}
             </div>
           ) : (
-            <EmptyState 
+            <EmptyState
               icon={<Heart size={48} />}
               message="Bạn chưa có sản phẩm yêu thích nào."
               buttonText="Khám phá ngay"
@@ -225,13 +247,18 @@ export default function UserProfile() {
         <section>
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-gray-200">
             <ShoppingCart className="text-blue-500" size={28} />
-            <h3 className="text-2xl font-semibold text-gray-800">Sản phẩm trong giỏ hàng</h3>
+            <h3 className="text-2xl font-semibold text-gray-800">
+              Sản phẩm trong giỏ hàng
+            </h3>
           </div>
           {cart.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {cart.map((item) => (
-                  <div key={item.id} className="group relative bg-white rounded-xl p-4 shadow-md border border-gray-200/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                  <div
+                    key={item.id}
+                    className="group relative bg-white rounded-xl p-4 shadow-md border border-gray-200/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                  >
                     <Link href={`/products/${item.slug}`} className="block">
                       <Image
                         src={item.image}
@@ -240,7 +267,9 @@ export default function UserProfile() {
                         height={300}
                         className="rounded-lg w-full h-52 object-cover mb-4"
                       />
-                      <h4 className="font-semibold text-gray-800 truncate">{item.name}</h4>
+                      <h4 className="font-semibold text-gray-800 truncate">
+                        {item.name}
+                      </h4>
                       <p className="text-lg text-red-600 font-bold mt-1">
                         {item.price.toLocaleString("vi-VN")} VNĐ
                       </p>
@@ -264,7 +293,7 @@ export default function UserProfile() {
               </div>
             </>
           ) : (
-            <EmptyState 
+            <EmptyState
               icon={<PackageOpen size={48} />}
               message="Giỏ hàng của bạn đang trống."
               buttonText="Tiếp tục mua sắm"
