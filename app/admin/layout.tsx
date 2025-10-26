@@ -30,49 +30,49 @@ import { AdminSidebar } from '@/components/admin/AdminSidebar';
 
 
 const menuGroups = [
-    {
-        children: [
-            { href: "/admin", label: "Tổng quan", icon: CircleGauge },
-        ],
-    },
+    // {
+    //     children: [
+    //         { href: "/admin", label: "Tổng quan", icon: CircleGauge },
+    //     ],
+    // },
     {
         group: "Quản lý sản phẩm",
         children: [
             { href: "/admin/products", label: "Sản phẩm", icon: PackageSearch },
             { href: "/admin/categories", label: "Danh mục", icon: ChartBarStacked },
             // { href: "/admin/brands", label: "Thương hiệu", icon: Tags },
-            { href: "/admin/stock", label: "Kho tồn", icon: Container },
+            // { href: "/admin/stock", label: "Kho tồn", icon: Container },
         ],
     },
     {
         group: "Quản lý đơn hàng",
         children: [
-            { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingCart },
+            { href: "/admin/carts", label: "Giỏ hàng", icon: ShoppingCart },
             // { href: "/admin/shipping", label: "Vận chuyển", icon: Truck },
-            { href: "/admin/cancel", label: "Hủy đơn", icon: Ban },
+            // { href: "/admin/cancel", label: "Hủy đơn", icon: Ban },
         ],
     },
     {
         group: "Quản lý người dùng",
         children: [
-            { href: "/admin/customers", label: "Khách hàng", icon: UserRound },
-            { href: "/admin/wishlist", label: "Wishlist", icon: Heart },
+            { href: "/admin/users", label: "Khách hàng", icon: UserRound },
+            // { href: "/admin/wishlist", label: "Wishlist", icon: Heart },
         ],
     },
     {
         group: "Nội dung & Marketing",
         children: [
-            { href: "/admin/blog", label: "Bài viết", icon: FileText },
-            { href: "/admin/banner", label: "Banner / Quảng cáo", icon: Megaphone },
+            { href: "/admin/posts", label: "Bài viết", icon: FileText },
+            // { href: "/admin/banner", label: "Banner / Quảng cáo", icon: Megaphone },
         ],
     },
-    {
-        group: "Cấu hình hệ thống",
-        children: [
-            { href: "/admin/settings", label: "Cài đặt", icon: Settings },
-            { href: "/admin/payment", label: "Thanh toán", icon: CreditCard },
-        ],
-    },
+    // {
+    //     group: "Cấu hình hệ thống",
+    //     children: [
+    //         { href: "/admin/settings", label: "Cài đặt", icon: Settings },
+    //         { href: "/admin/payment", label: "Thanh toán", icon: CreditCard },
+    //     ],
+    // },
 ];
 
 
