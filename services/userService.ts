@@ -1,13 +1,33 @@
-import { User, UserListResponse, UserQuery } from "@/types/user.type";
+import { User, UserDelete, UserListResponse, UserQuery } from "@/types/user.type";
 import apiService from "./apiService";
+import { cleanEmptyParams, URLParamsConfig } from "@/utils/urlParams";
 
 class UserService {
   private endpoint = "/users";
 
-  async getAll(query?: UserQuery): Promise<UserListResponse> {
+   private normalizeQuery(query?: URLParamsConfig): UserQuery {
+      if (!query) return {};
+  
+      const cleaned = cleanEmptyParams(query);
+  
+      return {
+        limit: cleaned.limit as number,
+        skip: cleaned.skip as number,
+        q: cleaned.q as string,
+        sortBy: cleaned.sortBy as string,
+        order: cleaned.order as 'asc' | 'desc',
+      };
+    }
+
+  async getAll(query?: URLParamsConfig): Promise<UserListResponse> {
     try {
-      const res = await apiService.get<UserListResponse>(this.endpoint, {
-        params: query,
+      const normalizedQuery = this.normalizeQuery(query);
+      const endpoint = normalizedQuery.q 
+        ? `${this.endpoint}/search` 
+        : this.endpoint;
+
+      const res = await apiService.get<UserListResponse>(endpoint, {
+        params: normalizedQuery,
       });
       return res.data;
     } catch (error) {
@@ -29,7 +49,7 @@ class UserService {
   ): Promise<User> {
     try {
       const response = await apiService.post<User>(
-        this.endpoint,
+        `${this.endpoint}/add`,
         userData
       );
       return response.data;
@@ -55,9 +75,9 @@ class UserService {
     }
   }
 
-  async delete(id: string | number): Promise<{ message: string }> {
+  async delete(id: string | number): Promise<UserDelete> {
     try {
-      const response = await apiService.delete<{ message: string }>(
+      const response = await apiService.delete<UserDelete>(
         `${this.endpoint}/${id}`
       );
       return response.data;

@@ -53,7 +53,7 @@
   justify-content: center;
   gap: 2px;
   padding: 6px 8px;
-  border: 1px solid transparent; 
+  border: 1px solid transparent;
   border-radius: 8px;
   cursor: pointer;
   background: #dddd;
@@ -66,12 +66,12 @@
 .btn:focus,
 .btn:active,
 .btn:focus-visible {
-  border-color: transparent !important; 
+  border-color: transparent !important;
   outline: none !important;
   box-shadow: none !important;
   transform: none;
 }
- 
+
 .btn:disabled {
   cursor: not-allowed;
   box-shadow: none;
@@ -90,7 +90,6 @@
 .btn-primary {
   background: #438aca;
 }
-
 
 .table-container {
   padding-top: 32px;
@@ -371,5 +370,27 @@
     margin: 0;
     border-radius: 0;
     max-height: 100vh;
+  }
+}
+
+.user-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  &__avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    position: relative;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
   }
 }

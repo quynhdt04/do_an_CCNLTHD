@@ -1,14 +1,14 @@
 export interface User {
-  id: number;
+  id?: number;
   firstName: string;
   lastName: string;
-  maidenName: string;
+  maidenName?: string;
   age: number;
   gender: "male" | "female" | string;
-  email: string;
+  email?: string;
   phone: string;
-  username: string;
-  password: string;
+  username?: string;
+  password?: string;
   birthDate: string;
   image: string;
 }
@@ -16,8 +16,9 @@ export interface User {
 export interface UserQuery {
   skip?: number;
   limit?: number;
-  search?: string;
+  q?: string;
   sortBy?: string;
+  order?: "asc" | "desc";
 }
 
 export interface UserListResponse {
@@ -26,3 +27,11 @@ export interface UserListResponse {
   skip: number;
   limit: number;
 }
+
+export interface UserDelete {
+  id: number;
+  username?: string;
+  isDeleted: boolean;
+  deletedOn: string;
+}
+
