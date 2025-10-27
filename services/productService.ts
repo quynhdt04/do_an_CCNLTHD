@@ -1,17 +1,38 @@
 import {
   Product,
+  ProductDelete,
   ProductListResponse,
   ProductQuery,
 } from "@/types/product.type";
 import apiService from "./apiService";
+import { cleanEmptyParams, URLParamsConfig } from "@/utils/urlParams";
 
 class ProductService {
   private endpoint = "/products";
 
-  async getAll(query?: ProductQuery): Promise<ProductListResponse> {
+  private normalizeQuery(query?: URLParamsConfig): ProductQuery {
+    if (!query) return {};
+
+    const cleaned = cleanEmptyParams(query);
+
+    return {
+      limit: cleaned.limit as number,
+      skip: cleaned.skip as number,
+      q: cleaned.q as string,
+      sortBy: cleaned.sortBy as string,
+      order: cleaned.order as 'asc' | 'desc',
+    };
+  }
+
+  async getAll(query?: URLParamsConfig): Promise<ProductListResponse> {
     try {
-      const res = await apiService.get<ProductListResponse>(this.endpoint, {
-        params: query,
+      const normalizedQuery = this.normalizeQuery(query);
+      const endpoint = normalizedQuery.q 
+        ? `${this.endpoint}/search` 
+        : this.endpoint;
+
+      const res = await apiService.get<ProductListResponse>(endpoint, {
+        params: normalizedQuery,
       });
       return res.data;
     } catch (error) {
@@ -31,7 +52,7 @@ class ProductService {
   async create(productData: Omit<Product, "id">): Promise<Product> {
     try {
       const response = await apiService.post<Product>(
-        this.endpoint,
+        `${this.endpoint}/add`,
         productData
       );
       return response.data;
@@ -57,9 +78,9 @@ class ProductService {
     }
   }
 
-  async delete(id: string | number): Promise<{ message: string }> {
+  async delete(id: string | number): Promise<ProductDelete> {
     try {
-      const response = await apiService.delete<{ message: string }>(
+      const response = await apiService.delete<ProductDelete>(
         `${this.endpoint}/${id}`
       );
       return response.data;
@@ -69,13 +90,18 @@ class ProductService {
     }
   }
 
-  async search(keyword: string): Promise<Product[]> {
+  async search(
+    keyword: string,
+    query?: URLParamsConfig
+  ): Promise<ProductListResponse> {
     try {
-      const response = await apiService.get<Product[]>(
-        `${this.endpoint}/search`,
-        {
-          params: { q: keyword },
-        }
+      const normalizedQuery = this.normalizeQuery({
+        ...query,
+        search: keyword,
+      });
+      const response = await apiService.get<ProductListResponse>(
+        this.endpoint,
+        { params: normalizedQuery }
       );
       return response.data;
     } catch (error) {

@@ -6,7 +6,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import Image from "next/image";
-import "@/styles/swiper-custom.css";
+import "@/styles/swiper-custom.scss";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ProductItem from "@/components/ProductItem";

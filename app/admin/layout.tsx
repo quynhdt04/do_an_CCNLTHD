@@ -27,7 +27,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Toaster } from 'sonner';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
-
+import "../../styles/index.scss";
 
 const menuGroups = [
     // {
