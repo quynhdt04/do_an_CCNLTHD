@@ -71,7 +71,7 @@ export default function UserPage() {
   const handleDelete = async (id: any) => {
     const result = await Swal.fire({
       title: "Xác nhận xóa",
-      text: "Bạn có chắc chắn muốn xóa sản phẩm này?",
+      text: "Bạn có chắc chắn muốn xóa người dùng này?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#ef4444",
@@ -81,18 +81,18 @@ export default function UserPage() {
     });
 
     if (result.isConfirmed) {
-      const loadingToast = toast.loading("Đang xóa sản phẩm...");
+      const loadingToast = toast.loading("Đang xóa người dùng...");
 
       try {
         setLoading(true);
         const deleteResult = await userService.delete(id);
 
         if (deleteResult && deleteResult.isDeleted) {
-          toast.success("Xóa sản phẩm thành công!", { id: loadingToast });
+          toast.success("Xóa người dùng thành công!", { id: loadingToast });
         }
       } catch (error) {
         console.error("Error delete product:", error);
-        toast.error("Có lỗi xảy ra khi xóa sản phẩm!", { id: loadingToast });
+        toast.error("Có lỗi xảy ra khi xóa người dùng!", { id: loadingToast });
       } finally {
         setLoading(false);
       }

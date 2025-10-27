@@ -1,4 +1,4 @@
-import { Post, PostListResponse, PostQuery } from "@/types/post.type";
+import { Post, PostDelete, PostListResponse, PostQuery } from "@/types/post.type";
 import apiService from "./apiService";
 
 class PostService {
@@ -27,7 +27,7 @@ class PostService {
   async create(postData: Omit<Post, "id">): Promise<Post> {
     try {
       const response = await apiService.post<Post>(
-        this.endpoint,
+        `${this.endpoint}/add`,
         postData
       );
       return response.data;
@@ -53,9 +53,9 @@ class PostService {
     }
   }
 
-  async delete(id: string | number): Promise<{ message: string }> {
+  async delete(id: string | number): Promise<PostDelete> {
     try {
-      const response = await apiService.delete<{ message: string }>(
+      const response = await apiService.delete<PostDelete>(
         `${this.endpoint}/${id}`
       );
       return response.data;

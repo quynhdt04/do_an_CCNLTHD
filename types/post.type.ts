@@ -4,13 +4,13 @@ export interface Reactions {
 }
 
 export interface Post {
-  id: number;
+  id?: number;
   title: string;
   body: string;
-  tags: string[];
-  reactions: Reactions;
-  views: number;
-  userId: number;
+  tags?: string[];
+  reactions?: Reactions;
+  views?: number;
+  userId?: number;
 }
 
 export interface PostQuery {
@@ -25,4 +25,11 @@ export interface PostListResponse {
   total: number;
   skip: number;
   limit: number;
+}
+
+export interface PostDelete {
+  id: number;
+  title?: string;
+  isDeleted: boolean;
+  deletedOn: string;
 }
