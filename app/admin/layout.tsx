@@ -44,14 +44,14 @@ const menuGroups = [
             // { href: "/admin/stock", label: "Kho tồn", icon: Container },
         ],
     },
-    {
-        group: "Quản lý đơn hàng",
-        children: [
-            { href: "/admin/carts", label: "Giỏ hàng", icon: ShoppingCart },
-            // { href: "/admin/shipping", label: "Vận chuyển", icon: Truck },
-            // { href: "/admin/cancel", label: "Hủy đơn", icon: Ban },
-        ],
-    },
+    // {
+    //     group: "Quản lý đơn hàng",
+    //     children: [
+    //         { href: "/admin/carts", label: "Giỏ hàng", icon: ShoppingCart },
+    //         { href: "/admin/shipping", label: "Vận chuyển", icon: Truck },
+    //         { href: "/admin/cancel", label: "Hủy đơn", icon: Ban },
+    //     ],
+    // },
     {
         group: "Quản lý người dùng",
         children: [
