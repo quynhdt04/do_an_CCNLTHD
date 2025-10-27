@@ -10,12 +10,20 @@ export interface Product {
   tags?: string[];
   brand?: string;
   thumbnail?: string;
+  reviews?: {
+    rating: number;
+    comment: string;
+    date: string;
+    reviewerName: string;
+    reviewerEmail: string;
+  }[];
 }
 
 export interface ProductQuery {
   skip?: number;
   limit?: number;
   search?: string;
+  q?: string;
   category?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -29,4 +37,12 @@ export interface ProductListResponse {
   total: number;
   skip: number;
   limit: number;
+}
+
+export interface ProductDelete {
+  id: number;
+  title?: string;
+  description?: string;
+  isDeleted: boolean;
+  deletedOn: string;
 }
