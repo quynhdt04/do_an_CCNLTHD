@@ -139,31 +139,38 @@ export default function Header() {
             />
           </li>
 
-          {navItems.map((item) => (
-            <li
-              key={item.path}
-              className="font-semibold relative group transition-all hover:scale-110"
-            >
-              <Link
-                href={item.path}
-                onClick={() => setIsOpenMenu(false)}
-                className={`block px-1 py-1 transition-all duration-200 ${
-                  pathname.startsWith(item.path)
-                    ? "text-blue-600"
-                    : "text-gray-800 hover:text-blue-600"
-                }`}
+          {navItems.map((item) => {
+            const isActive =
+              item.path === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.path);
+
+            return (
+              <li
+                key={item.path}
+                className="font-semibold relative group transition-all hover:scale-110"
               >
-                {item.name}
-              </Link>
-              <span
-                className={`absolute bottom-0 left-0 h-[2px] w-full bg-blue-600 rounded-full transition-all duration-300 origin-left ${
-                  pathname.startsWith(item.path)
-                    ? "scale-x-100"
-                    : "scale-x-0 group-hover:scale-x-100"
-                }`}
-              ></span>
-            </li>
-          ))}
+                <Link
+                  href={item.path}
+                  onClick={() => setIsOpenMenu(false)}
+                  className={`block px-1 py-1 transition-all duration-200 ${
+                    isActive
+                      ? "text-blue-600"
+                      : "text-gray-800 hover:text-blue-600"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+                <span
+                  className={`absolute bottom-0 left-0 h-[2px] w-full bg-blue-600 rounded-full transition-all duration-300 origin-left ${
+                    isActive
+                      ? "scale-x-100"
+                      : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                ></span>
+              </li>
+            );
+          })}
         </ul>
 
         {/* === MOBILE USER SLIDE MENU === */}
